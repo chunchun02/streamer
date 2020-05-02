@@ -10,8 +10,8 @@ import (
 )
 
 type Streamer interface {
-	Subscribe() chan interface{}
-	Unsubscribe()
+	Subscribe() *connection.Connection
+	Unsubscribe(connection *connection.Connection)
 	In(packet interface{})
 	Start()
 	Status() status.Status
@@ -27,6 +27,14 @@ type Server struct {
 	End         chan bool
 	Connections []*connection.Connection
 	WorkerSize  int
+}
+
+func NewServer(workerSize int) *Server {
+	return &Server{
+		works:      make(chan *work.Work),
+		End:        make(chan bool),
+		WorkerSize: workerSize,
+	}
 }
 
 func (server *Server) Subscribe() *connection.Connection {
