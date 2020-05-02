@@ -13,13 +13,13 @@ type Worker struct {
 	End           chan bool
 }
 
-func (w *Worker) Start(connections []*connection.Connection) {
+func (w *Worker) Start(connector *connection.Connectors) {
 	go func() {
 		for {
 			w.WorkerChannel <- w.Channel
 			select {
 			case wo := <-w.Channel:
-				for _, con := range connections {
+				for _, con := range connector.Connections {
 					con.Work = wo
 					con.Stream()
 				}

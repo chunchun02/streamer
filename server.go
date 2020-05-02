@@ -21,18 +21,19 @@ type Streamer interface {
 var WorkerChannel = make(chan chan *work.Work)
 
 type Server struct {
-	mu          sync.Mutex
-	works       chan *work.Work
-	workers     []*worker.Worker
-	End         chan bool
-	Connections []*connection.Connection
-	WorkerSize  int
+	mu         sync.Mutex
+	works      chan *work.Work
+	workers    []*worker.Worker
+	End        chan bool
+	Connectors *connection.Connectors
+	WorkerSize int
 }
 
 func NewServer(workerSize int) *Server {
 	return &Server{
 		works:      make(chan *work.Work),
 		End:        make(chan bool),
+		Connectors: &connection.Connectors{},
 		WorkerSize: workerSize,
 	}
 }
@@ -45,16 +46,16 @@ func (server *Server) Subscribe() *connection.Connection {
 		ID:      u,
 		Channel: make(chan *work.Work),
 	}
-	server.Connections = append(server.Connections, con)
+	server.Connectors.Connections = append(server.Connectors.Connections, con)
 	return con
 }
 
 func (server *Server) Unsubscribe(connection *connection.Connection) {
-	for i, con := range server.Connections {
+	for i, con := range server.Connectors.Connections {
 		if con.ID == connection.ID {
-			server.Connections[i] = server.Connections[len(server.Connections)-1]
-			server.Connections[len(server.Connections)-1] = nil
-			server.Connections = server.Connections[:len(server.Connections)-1]
+			server.Connectors.Connections[i] = server.Connectors.Connections[len(server.Connectors.Connections)-1]
+			server.Connectors.Connections[len(server.Connectors.Connections)-1] = nil
+			server.Connectors.Connections = server.Connectors.Connections[:len(server.Connectors.Connections)-1]
 		}
 	}
 }
@@ -74,7 +75,7 @@ func (server *Server) Start() {
 			Channel:       make(chan *work.Work),
 			End:           make(chan bool),
 		}
-		w.Start(server.Connections)
+		w.Start(server.Connectors)
 		server.workers = append(server.workers, w)
 	}
 
@@ -96,7 +97,7 @@ func (server *Server) Start() {
 
 func (server *Server) Status() status.Status {
 	return status.Status{
-		Connections: len(server.Connections),
+		Connections: len(server.Connectors.Connections),
 		Workers:     server.WorkerSize,
 		Packets:     len(server.works),
 	}

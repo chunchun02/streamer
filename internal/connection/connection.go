@@ -11,6 +11,10 @@ type Connection struct {
 	Channel chan *work.Work
 }
 
+type Connectors struct {
+	Connections []*Connection
+}
+
 func (con *Connection) Stream() {
 	con.Channel <- con.Work
 }
