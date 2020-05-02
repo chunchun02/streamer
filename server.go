@@ -56,6 +56,7 @@ func (server *Server) Unsubscribe(connection *connection.Connection) {
 			server.Connectors.Connections[i] = server.Connectors.Connections[len(server.Connectors.Connections)-1]
 			server.Connectors.Connections[len(server.Connectors.Connections)-1] = nil
 			server.Connectors.Connections = server.Connectors.Connections[:len(server.Connectors.Connections)-1]
+			break
 		}
 	}
 }
