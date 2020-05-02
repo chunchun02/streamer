@@ -51,6 +51,8 @@ func (server *Server) Subscribe() *connection.Connection {
 }
 
 func (server *Server) Unsubscribe(connection *connection.Connection) {
+	server.mu.Lock()
+	defer server.mu.Unlock()
 	for i, con := range server.Connectors.Connections {
 		if con.ID == connection.ID {
 			server.Connectors.Connections[i] = server.Connectors.Connections[len(server.Connectors.Connections)-1]
