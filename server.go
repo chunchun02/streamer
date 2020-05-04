@@ -39,8 +39,8 @@ func NewServer(workerSize int) *Server {
 }
 
 func (server *Server) Subscribe() *connection.Connection {
-	server.mu.Lock()
-	defer server.mu.Unlock()
+	server.Connectors.Lock()
+	defer server.Connectors.Unlock()
 	u, _ := uuid.NewRandom()
 	con := &connection.Connection{
 		ID:      u,
@@ -51,8 +51,8 @@ func (server *Server) Subscribe() *connection.Connection {
 }
 
 func (server *Server) Unsubscribe(connection *connection.Connection) {
-	server.mu.Lock()
-	defer server.mu.Unlock()
+	server.Connectors.Lock()
+	defer server.Connectors.Unlock()
 	for i, con := range server.Connectors.Connections {
 		if con.ID == connection.ID {
 			server.Connectors.Connections[i] = server.Connectors.Connections[len(server.Connectors.Connections)-1]
