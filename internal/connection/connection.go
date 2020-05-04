@@ -8,7 +8,6 @@ import (
 
 type Connection struct {
 	ID      uuid.UUID
-	Work    *work.Work
 	Channel chan *work.Work
 }
 

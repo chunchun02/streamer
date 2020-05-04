@@ -20,11 +20,9 @@ func (w *Worker) Start(connector *connection.Connectors) {
 			select {
 			case wo := <-w.Channel:
 				for _, con := range connector.Connections {
-					go func() {
-						if con != nil {
-							con.Channel <- wo
-						}
-					}()
+					if con != nil {
+						con.Channel <- wo
+					}
 				}
 			case <-w.End:
 				return
