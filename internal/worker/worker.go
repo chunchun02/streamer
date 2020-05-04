@@ -20,8 +20,10 @@ func (w *Worker) Start(connector *connection.Connectors) {
 			select {
 			case wo := <-w.Channel:
 				for _, con := range connector.Connections {
-					con.Work = wo
-					con.Stream()
+					if con != nil {
+						con.Work = wo
+						con.Stream()
+					}
 				}
 			case <-w.End:
 				return
