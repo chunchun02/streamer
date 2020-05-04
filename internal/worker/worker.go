@@ -22,8 +22,7 @@ func (w *Worker) Start(connector *connection.Connectors) {
 				for _, con := range connector.Connections {
 					go func() {
 						if con != nil {
-							con.Work = wo
-							con.Stream()
+							con.Channel <- wo
 						}
 					}()
 				}

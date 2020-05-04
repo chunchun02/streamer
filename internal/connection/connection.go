@@ -17,10 +17,6 @@ type Connectors struct {
 	Connections []*Connection
 }
 
-func (con *Connection) Stream() {
-	con.Channel <- con.Work
-}
-
 func (connectors *Connectors) Lock() {
 	connectors.mu.Lock()
 }
